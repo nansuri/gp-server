@@ -5,47 +5,49 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
 )
 
-// AllEmployee = Select Employee API
-func AllEmployee(w http.ResponseWriter, r *http.Request) {
-	var employee model.Employee
+// AllUser = Select Employee API
+func GetAllUser(w http.ResponseWriter, r *http.Request) {
+	var user model.User
 	var response model.Response
-	var arrEmployee []model.Employee
+	var arrUser []model.User
 
 	db := config.Connect()
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, name, city FROM employee")
+	rows, err := db.Query("SELECT * FROM user")
 
 	if err != nil {
 		log.Print(err)
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&employee.Id, &employee.Name, &employee.City)
+		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.LastLogin)
 		if err != nil {
 			log.Fatal(err.Error())
 		} else {
-			arrEmployee = append(arrEmployee, employee)
+			arrUser = append(arrUser, user)
 		}
 	}
 
 	response.Status = 200
 	response.Message = "Success"
-	response.Data = arrEmployee
+	response.Data = arrUser
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	json.NewEncoder(w).Encode(response)
 }
 
-// InsertEmployee = Insert Employee API
-func InsertEmployee(w http.ResponseWriter, r *http.Request) {
+// InsertUserInfo = Insert User API
+func InsertUserInfo(w http.ResponseWriter, r *http.Request) {
 	var response model.Response
+	loc, _ := time.LoadLocation("Asia/Jakarta")
 
 	db := config.Connect()
 	defer db.Close()
@@ -54,10 +56,11 @@ func InsertEmployee(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	name := r.FormValue("name")
-	city := r.FormValue("city")
+	first_name := r.FormValue("first_name")
+	last_name := r.FormValue("last_name")
+	login_date := time.Now().UTC().In(loc)
 
-	_, err = db.Exec("INSERT INTO employee(name, city) VALUES(?, ?)", name, city)
+	_, err = db.Exec("INSERT INTO user(first_name, last_name, login_date) VALUES(?, ?, ?)", first_name, last_name, login_date)
 
 	if err != nil {
 		log.Print(err)

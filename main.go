@@ -13,8 +13,8 @@ import (
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/getEmployee", controller.AllEmployee).Methods("GET")
-	router.HandleFunc("/insertEmployee", controller.InsertEmployee).Methods("POST")
+	router.HandleFunc("/getUser", controller.GetAllUser).Methods("GET")
+	router.HandleFunc("/insertUser", controller.InsertUserInfo).Methods("POST")
 	http.Handle("/", router)
 	fmt.Println("Connected to port 1234")
 	log.Fatal(http.ListenAndServe(":1234", router))
