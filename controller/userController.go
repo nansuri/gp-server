@@ -7,12 +7,19 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/mux"
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
 )
 
-// AllUser = Select Employee API
-func GetAllUser(w http.ResponseWriter, r *http.Request) {
+// List all of User API
+func ListAllUserAPI(router *mux.Router) {
+	router.HandleFunc("/getUserInfo", GetAllUserInfo).Methods("GET")
+	router.HandleFunc("/insertUser", InsertUserInfo).Methods("POST")
+}
+
+// Get all user Info
+func GetAllUserInfo(w http.ResponseWriter, r *http.Request) {
 	var user model.User
 	var response model.Response
 	var arrUser []model.User
