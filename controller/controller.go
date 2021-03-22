@@ -61,6 +61,11 @@ func InsertEmployee(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Print(err)
+		response.Status = 500
+		response.Message = "System Error"
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		json.NewEncoder(w).Encode(response)
 		return
 	}
 	response.Status = 200

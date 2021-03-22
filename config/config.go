@@ -8,9 +8,10 @@ func Connect() *sql.DB {
 	dbDriver := "mysql"
 	dbUser := "root"
 	dbPass := "televisi"
-	dbName := "192.168.2.105:3306/multi_db"
+	dbConf := "192.168.2.105:3306"
+	dbName := "multi_data"
 
-	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@"+dbName)
+	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+dbConf+")/"+dbName)
 	if err != nil {
 		panic(err.Error())
 	}
