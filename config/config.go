@@ -6,8 +6,8 @@ import (
 
 func Connect() *sql.DB {
 	dbDriver := "mysql"
-	dbUser := "root"
-	dbPass := "televisi"
+	dbUser := "gpuser"
+	dbPass := "FtTY@ycvpf-tJ][*"
 	dbConf := "192.168.2.105:3306"
 	dbName := "multi_data"
 
