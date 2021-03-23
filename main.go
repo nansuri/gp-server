@@ -11,9 +11,11 @@ import (
 )
 
 func main() {
+	var port string = "3025"
 	router := mux.NewRouter()
+
 	userController.ListAllUserAPI(router)
 	http.Handle("/", router)
-	fmt.Println("Connected to port 1234")
-	log.Fatal(http.ListenAndServe(":1234", router))
+	fmt.Println("==== Server Listen on port " + port + " ===")
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
