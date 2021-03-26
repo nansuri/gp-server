@@ -82,7 +82,6 @@ func GetToken(w http.ResponseWriter, r *http.Request) {
 	// Declared the request and response struct
 	var getTokenRequest model.GetTokenRequest
 	var getTokenResponse model.GetTokenResponse
-	var 
 
 	// JSON Body decoder
 	decodeRequest(w, r, &getTokenRequest)
