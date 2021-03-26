@@ -39,3 +39,23 @@ func QueryTokenByUserInfoAndScope(encryptedUserInfo string, scope string) string
 
 	return token
 }
+
+func QueryUserInfoByTokenAndScope(token string, scope string) string {
+
+	var encryptedUserInfo string
+
+	db := config.Connect()
+	defer db.Close()
+
+	err := db.QueryRow("SELECT encryptedUserInfo FROM user_token WHERE token=? AND scope=?", token, scope)
+	switch err := err.Scan(&token); err {
+	case sql.ErrNoRows:
+		encryptedUserInfo = ""
+	case nil:
+		return encryptedUserInfo
+	default:
+		panic(err)
+	}
+
+	return encryptedUserInfo
+}

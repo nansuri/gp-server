@@ -82,27 +82,40 @@ func GetToken(w http.ResponseWriter, r *http.Request) {
 	// Declared the request and response struct
 	var getTokenRequest model.GetTokenRequest
 	var getTokenResponse model.GetTokenResponse
+	var isSuccess bool
+	var errorContext string
 
 	// JSON Body decoder
 	decodeRequest(w, r, &getTokenRequest)
 
 	// Some Logic Here
 	decryptedUserInfo := util.Decrypt(getTokenRequest.EncryptedUserInfo)
+	if decryptedUserInfo == "" {
+		isSuccess = false
+		errorContext = "Invalid Encryption Info"
+	} else {
+		isSuccess = true
+	}
 
 	switch getTokenRequest.Scope {
 	case "TESTRAILEXPORTER":
 		fmt.Println("Scope is TESTRAILEXPORTER with " + decryptedUserInfo)
+	case "GENERAL":
+		fmt.Println("Scope is GENERAL")
 	default:
-		fmt.Println("Scope is Other")
+		isSuccess = false
+		errorContext = "Invalid Scope"
 	}
 
 	token := util.QueryTokenByUserInfoAndScope(getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
-	if token == "" {
+	if token == "" && getTokenRequest.Scope != "" && isSuccess {
 		fmt.Println("Generate token now")
 		token = util.GenerateTokenAndStore("userId", getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
 	}
 
 	// send response
 	getTokenResponse.Token = token
+	getTokenResponse.Status = isSuccess
+	getTokenResponse.Error = errorContext
 	EncodeResponse(w, r, getTokenResponse)
 }

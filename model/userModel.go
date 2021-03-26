@@ -1,5 +1,10 @@
 package model
 
+type UserInfo struct {
+	user_email    string
+	user_password string
+}
+
 type User struct {
 	Id        string `form:"id" json:"id"`
 	FirstName string `form:"first_name" json:"first_name"`
@@ -30,7 +35,17 @@ type GetTokenRequest struct {
 }
 
 type GetTokenResponse struct {
-	Token string `json:"token"`
+	Token  string `json:"token"`
+	Status bool   `json:"success"`
+	Error  string `json:"error_details"`
 }
 
-// Encryptor API
+// Verify Token API
+type VerifyTokenRequest struct {
+	EncryptedUserInfo string `json:"encrypted_user_info"`
+	Scope             string `json:"scope"`
+}
+
+type VerifyTokenResponse struct {
+	Status bool `json:"success"`
+}

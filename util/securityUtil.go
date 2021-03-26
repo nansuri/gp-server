@@ -68,16 +68,19 @@ func Decrypt(encryptedString string) (decryptedString string) {
 
 	decodeString, err := base64.StdEncoding.DecodeString(encryptedString)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println("!! - Decryption Failed")
+		return ""
 	}
 
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
+		return ""
 		panic(err.Error())
 	}
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
+		return ""
 		panic(err.Error())
 	}
 
@@ -85,9 +88,10 @@ func Decrypt(encryptedString string) (decryptedString string) {
 
 	plaintext, err := aesgcm.Open(nil, nonce, decodeString, nil)
 	if plaintext != nil {
-		fmt.Println("- Decryption success")
+		fmt.Println("OK - Decryption Success")
 	}
 	if err != nil {
+		return ""
 		panic(err.Error())
 	}
 	return string(plaintext)
