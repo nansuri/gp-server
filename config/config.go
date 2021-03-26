@@ -8,7 +8,7 @@ func Connect() *sql.DB {
 	dbDriver := "mysql"
 	dbUser := "gpuser"
 	dbPass := "FtTY@ycvpf-tJ][*"
-	dbConf := "192.168.2.105:3306"
+	dbConf := "6.tcp.ngrok.io:11914"
 	dbName := "multi_data"
 
 	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+dbConf+")/"+dbName)
