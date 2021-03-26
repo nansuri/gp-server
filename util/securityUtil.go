@@ -3,9 +3,13 @@ package util
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
 	"crypto/rsa"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
+
+	"github.com/nansuri/gp-server/config"
 )
 
 type RSAKeyPair struct {
@@ -14,9 +18,30 @@ type RSAKeyPair struct {
 }
 
 // Key
-var key = "0123456789012345"
+var key = config.RSAKey
 
 const NONCESIZE = 12
+
+// const defaultTokenLength = 12
+
+// Use this to generate a token
+func GenerateSecureToken() string {
+	b := make([]byte, config.DefaultTokenLength)
+	if _, err := rand.Read(b); err != nil {
+		return ""
+	}
+	return hex.EncodeToString(b)
+}
+
+func GenerateTokenAndStore(userId string, encryptedUserInfo string, scope string) string {
+	var token = GenerateSecureToken()
+	StoreUserInfoAndToken(userId, encryptedUserInfo, scope, token)
+	return token
+}
+
+/**
+/ Used for encrypting a data
+**/
 
 func Encrypt(plainString string) []byte {
 
@@ -34,6 +59,10 @@ func Encrypt(plainString string) []byte {
 	ciphertext := aesgcm.Seal(nil, nonce, textByte, nil)
 	return ciphertext
 }
+
+/**
+/ Used for decrypting a data
+**/
 
 func Decrypt(encryptedString string) (decryptedString string) {
 
@@ -53,8 +82,6 @@ func Decrypt(encryptedString string) (decryptedString string) {
 	}
 
 	nonce := make([]byte, NONCESIZE)
-
-	fmt.Println("hi" + string(nonce))
 
 	plaintext, err := aesgcm.Open(nil, nonce, decodeString, nil)
 	if plaintext != nil {

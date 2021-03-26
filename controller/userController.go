@@ -5,32 +5,30 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
-	config "github.com/nansuri/gp-server/config"
-	userModel "github.com/nansuri/gp-server/model"
+	"github.com/nansuri/gp-server/config"
+	"github.com/nansuri/gp-server/model"
+	"github.com/nansuri/gp-server/util"
 )
 
 // List all of User API
 func ListAllUserAPI(router *mux.Router) {
 	router.HandleFunc("/getUserInfo", GetAllUserInfo).Methods("GET")
-	router.HandleFunc("/insertUser", InsertUserInfo).Methods("POST")
 	router.HandleFunc("/pingUser", TestParseAndReturn).Methods("POST")
 	router.HandleFunc("/getToken", GetToken).Methods("POST")
 }
 
 // Get all user Info
 func GetAllUserInfo(w http.ResponseWriter, r *http.Request) {
-	var user userModel.User
-	var response userModel.Response
-	var arrUser []userModel.User
+	var user model.User
+	var response model.Response
+	var arrUser []model.User
 
 	db := config.Connect()
 	defer db.Close()
 
 	rows, err := db.Query("SELECT * FROM user")
-
 	if err != nil {
 		log.Print(err)
 	}
@@ -51,56 +49,12 @@ func GetAllUserInfo(w http.ResponseWriter, r *http.Request) {
 	EncodeResponse(w, r, response)
 }
 
-// InsertUserInfo = Insert User API
-func InsertUserInfo(w http.ResponseWriter, r *http.Request) {
-
-	var request userModel.User
-	var response userModel.ResponseInsert
-
-	// Init db
-	db := config.Connect()
-	defer db.Close()
-
-	// decode request
-	err := decodeJSONBody(w, r, &request)
-	if err != nil {
-		var mr *malformedRequest
-		if errors.As(err, &mr) {
-			http.Error(w, mr.errorMessage, mr.status)
-		} else {
-			log.Println(err.Error())
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
-		return
-	}
-
-	// set time
-	loc, _ := time.LoadLocation("Asia/Jakarta")
-	login_date := time.Now().UTC().In(loc)
-
-	// db Execution
-	_, err = db.Exec("INSERT INTO user(first_name, last_name, login_date) VALUES(?, ?, ?)", request.FirstName, request.LastName, login_date)
-
-	if err != nil {
-		response.Status = http.StatusBadRequest
-		response.Message = "System Error"
-		EncodeResponse(w, r, response)
-		return
-	}
-
-	response.Status = http.StatusOK
-	response.Message = "Insert data successfully"
-	fmt.Print("Insert data to database of " + request.FirstName + "\n")
-
-	EncodeResponse(w, r, response)
-}
-
 // Test json request body
 func TestParseAndReturn(w http.ResponseWriter, r *http.Request) {
 
 	// Define your request and response data struct here
-	var user userModel.User
-	var response userModel.UserResponse
+	var user model.User
+	var response model.UserResponse
 
 	// JSON Body decoder
 	err := decodeJSONBody(w, r, &user)
@@ -126,29 +80,30 @@ func TestParseAndReturn(w http.ResponseWriter, r *http.Request) {
 func GetToken(w http.ResponseWriter, r *http.Request) {
 
 	// Declared the request and response struct
-	var getTokenRequest userModel.GetTokenRequest
-	var getTokenResponse userModel.GetTokenResponse
-	var decryptedMessage string
+	var getTokenRequest model.GetTokenRequest
+	var getTokenResponse model.GetTokenResponse
+	var 
 
 	// JSON Body decoder
-	err := decodeJSONBody(w, r, &getTokenRequest)
-	if err != nil {
-		var mr *malformedRequest
-		if errors.As(err, &mr) {
-			http.Error(w, mr.errorMessage, mr.status)
-		} else {
-			log.Println(err.Error())
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
-		return
+	decodeRequest(w, r, &getTokenRequest)
+
+	// Some Logic Here
+	decryptedUserInfo := util.Decrypt(getTokenRequest.EncryptedUserInfo)
+
+	switch getTokenRequest.Scope {
+	case "TESTRAILEXPORTER":
+		fmt.Println("Scope is TESTRAILEXPORTER with " + decryptedUserInfo)
+	default:
+		fmt.Println("Scope is Other")
 	}
 
-	// securityUtil.GenerateKeyPair()
-	// if err != nil {
-	// 	log.Println(err.Error())
-	// }
+	token := util.QueryTokenByUserInfoAndScope(getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
+	if token == "" {
+		fmt.Println("Generate token now")
+		token = util.GenerateTokenAndStore("userId", getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
+	}
 
 	// send response
-	getTokenResponse.Token = decryptedMessage
+	getTokenResponse.Token = token
 	EncodeResponse(w, r, getTokenResponse)
 }
