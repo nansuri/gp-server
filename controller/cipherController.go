@@ -8,9 +8,6 @@ import (
 	"github.com/nansuri/gp-server/util"
 )
 
-// All variable
-var key = "0123456789012345"
-
 // List all of User API
 func ListAllCipherAPI(router *mux.Router) {
 	router.HandleFunc("/getKeyPair", GetPublicKey).Methods("GET")
@@ -47,8 +44,7 @@ func EncryptData(w http.ResponseWriter, r *http.Request) {
 	decodeRequest(w, r, &request)
 
 	// Assemble the response
-	response.EncryptedData = util.Encrypt([]byte(request.Data), key)
-	response.Data = string(util.Encrypt([]byte(request.Data), key))
+	response.EncryptedData = util.Encrypt(request.Data)
 
 	// Send response
 	EncodeResponse(w, r, response)
@@ -63,7 +59,7 @@ func DecryptData(w http.ResponseWriter, r *http.Request) {
 	// JSON Body decoder
 	decodeRequest(w, r, &request)
 
-	data := util.Decrypt([]byte(request.DataByte), key)
+	data := util.Decrypt(request.DataByte)
 
 	// Assemble the response
 	response.Data = string(data)

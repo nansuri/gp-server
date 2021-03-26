@@ -3,13 +3,9 @@ package util
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/md5"
-	"crypto/rand"
 	"crypto/rsa"
-	"encoding/hex"
-	"io"
-	"io/ioutil"
-	"os"
+	"encoding/base64"
+	"fmt"
 )
 
 type RSAKeyPair struct {
@@ -17,52 +13,55 @@ type RSAKeyPair struct {
 	Public  rsa.PublicKey
 }
 
-func CreateHash(key string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(key))
-	return hex.EncodeToString(hasher.Sum(nil))
-}
+// Key
+var key = "0123456789012345"
 
-func Encrypt(data []byte, passphrase string) []byte {
-	block, _ := aes.NewCipher([]byte(CreateHash(passphrase)))
-	gcm, err := cipher.NewGCM(block)
+const NONCESIZE = 12
+
+func Encrypt(plainString string) []byte {
+
+	textByte := []byte(plainString)
+	block, err := aes.NewCipher([]byte(key))
+
 	if err != nil {
 		panic(err.Error())
 	}
-	nonce := make([]byte, gcm.NonceSize())
-	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+	nonce := make([]byte, NONCESIZE)
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
 		panic(err.Error())
 	}
-	ciphertext := gcm.Seal(nonce, nonce, data, nil)
+	ciphertext := aesgcm.Seal(nil, nonce, textByte, nil)
 	return ciphertext
 }
 
-func Decrypt(data []byte, passphrase string) []byte {
-	key := []byte(CreateHash(passphrase))
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-	nonceSize := gcm.NonceSize()
-	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
-	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
-	}
-	return plaintext
-}
+func Decrypt(encryptedString string) (decryptedString string) {
 
-func encryptFile(filename string, data []byte, passphrase string) {
-	f, _ := os.Create(filename)
-	defer f.Close()
-	f.Write(Encrypt(data, passphrase))
-}
+	decodeString, err := base64.StdEncoding.DecodeString(encryptedString)
+	if err != nil {
+		panic(err.Error())
+	}
 
-func decryptFile(filename string, passphrase string) []byte {
-	data, _ := ioutil.ReadFile(filename)
-	return Decrypt(data, passphrase)
+	block, err := aes.NewCipher([]byte(key))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	aesgcm, err := cipher.NewGCM(block)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	nonce := make([]byte, NONCESIZE)
+
+	fmt.Println("hi" + string(nonce))
+
+	plaintext, err := aesgcm.Open(nil, nonce, decodeString, nil)
+	if plaintext != nil {
+		fmt.Println("- Decryption success")
+	}
+	if err != nil {
+		panic(err.Error())
+	}
+	return string(plaintext)
 }

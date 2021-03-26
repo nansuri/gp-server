@@ -3,7 +3,7 @@ package model
 // Get Token API
 type GeneralRequest struct {
 	Data     string `json:"data"`
-	DataByte []byte `json:"data_byte"`
+	DataByte string `json:"data_byte"`
 }
 
 type GeneralResponse struct {
