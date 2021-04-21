@@ -9,4 +9,9 @@ type GeneralRequest struct {
 type GeneralResponse struct {
 	Data          string `json:"data"`
 	EncryptedData []byte `json:"encrypted_data"`
+	ExtendInfo    string `json:"extend_info"`
+}
+
+type GeneralHeader struct {
+	Token string `json:token`
 }

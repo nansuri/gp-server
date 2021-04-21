@@ -37,6 +37,14 @@ func decodeRequest(w http.ResponseWriter, request *http.Request, dataStruct inte
 	}
 }
 
+func decodeToken(w http.ResponseWriter, request *http.Request) string {
+	if request.Header.Get("Access-Token") != "" {
+		value, _ := header.ParseValueAndParams(request.Header, "Access-Token")
+		return value
+	}
+	return ""
+}
+
 /**
 / JSON Request Body Decoder
 **/

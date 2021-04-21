@@ -7,46 +7,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/nansuri/gp-server/config"
 	"github.com/nansuri/gp-server/model"
 	"github.com/nansuri/gp-server/util"
 )
 
 // List all of User API
 func ListAllUserAPI(router *mux.Router) {
-	router.HandleFunc("/getUserInfo", GetAllUserInfo).Methods("GET")
 	router.HandleFunc("/pingUser", TestParseAndReturn).Methods("POST")
 	router.HandleFunc("/getToken", GetToken).Methods("POST")
-}
-
-// Get all user Info
-func GetAllUserInfo(w http.ResponseWriter, r *http.Request) {
-	var user model.User
-	var response model.Response
-	var arrUser []model.User
-
-	db := config.Connect()
-	defer db.Close()
-
-	rows, err := db.Query("SELECT * FROM user")
-	if err != nil {
-		log.Print(err)
-	}
-
-	for rows.Next() {
-		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.LastLogin)
-		if err != nil {
-			log.Fatal(err.Error())
-		} else {
-			arrUser = append(arrUser, user)
-		}
-	}
-
-	response.Status = 200
-	response.Message = "Success"
-	response.Data = arrUser
-
-	EncodeResponse(w, r, response)
 }
 
 // Test json request body

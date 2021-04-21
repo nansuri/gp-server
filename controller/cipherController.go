@@ -38,11 +38,13 @@ func DecryptData(w http.ResponseWriter, r *http.Request) {
 
 	// JSON Body decoder
 	decodeRequest(w, r, &request)
+	token := decodeToken(w, r)
 
 	data := util.Decrypt(request.DataByte)
 
 	// Assemble the response
 	response.Data = string(data)
+	response.ExtendInfo = token
 
 	// Send response
 	EncodeResponse(w, r, response)

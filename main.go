@@ -16,6 +16,7 @@ func main() {
 
 	controller.ListAllUserAPI(router)
 	controller.ListAllCipherAPI(router)
+	controller.JiraBridgeAPI(router)
 
 	http.Handle("/", router)
 	fmt.Println("==== Server Listen on port " + port + " ===")
