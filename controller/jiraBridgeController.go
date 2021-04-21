@@ -45,7 +45,7 @@ func CreateJiraIssue(w http.ResponseWriter, r *http.Request) {
 	case "MEMO":
 		token = config.DingMember
 	default:
-		fmt.Println("Invalid")
+		fmt.Println("\nInvalid ding token")
 	}
 
 	util.SendNotification(token, request, response.Key)

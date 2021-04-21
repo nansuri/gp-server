@@ -10,7 +10,6 @@ import (
 )
 
 func SendNotification(token string, ticketDetail model.JiraRequest, key string) {
-
 	url := "https://oapi.dingtalk.com/robot/send?access_token=" + token
 	method := "POST"
 
@@ -23,7 +22,7 @@ func SendNotification(token string, ticketDetail model.JiraRequest, key string) 
 			"atMobiles": [
 				"6285224056939"
 			],
-			"isAtAll": false
+			"isAtAll": ` + ticketDetail.IsUrgent + `
 		}
 	}`
 

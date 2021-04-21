@@ -5,23 +5,16 @@ type JiraRequest struct {
 	Summary      string `json:"summary"`
 	Description  string `json:"description"`
 	Assignee     string `json:"assignee"`
+	Priority     string `json:"priority"`
 	Reporter     string `json:"reporter"`
 	Type         string `json:"type"`
-	AssigneeRole string `json:"AssigneeRole"`
-	ExtendInfo   string `json:"ExtendInfo"`
+	AssigneeRole string `json:"assignee_role"`
+	IsUrgent     string `json:"is_urgent"`
+	ExtendInfo   string `json:"extend_info"`
 }
 
 type JiraResult struct {
 	Status bool   `json:"success"`
 	Key    string `json:"jira_key"`
-}
-
-type JiraTicketDetails struct {
-	Summary      string `json:"summary"`
-	Description  string `json:"description"`
-	Assignee     string `json:"assignee"`
-	Reporter     string `json:"reporter"`
-	Type         string `json:"type"`
-	AssigneeRole string `json:"AssigneeRole"`
-	ExtendInfo   string `json:"ExtendInfo"`
+	Error  string `json:"error_detail"`
 }
