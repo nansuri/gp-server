@@ -2,10 +2,12 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	config "github.com/nansuri/gp-server/config"
 	"github.com/nansuri/gp-server/model"
 	util "github.com/nansuri/gp-server/util"
 )
@@ -19,6 +21,7 @@ func JiraBridgeAPI(router *mux.Router) {
 func CreateJiraIssue(w http.ResponseWriter, r *http.Request) {
 
 	// Define your request and response data struct here
+	var token string
 	var request model.JiraRequest
 	var response model.JiraResult
 
@@ -37,6 +40,15 @@ func CreateJiraIssue(w http.ResponseWriter, r *http.Request) {
 
 	// Logic
 	response.Key = util.CreateIssue(request)
+
+	switch request.Project {
+	case "MEMO":
+		token = config.DingMember
+	default:
+		fmt.Println("Invalid")
+	}
+
+	util.SendNotification(token, request, response.Key)
 
 	// Assemble the response
 	response.Status = true

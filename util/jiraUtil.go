@@ -4,14 +4,15 @@ import (
 	"fmt"
 
 	jira "github.com/andygrunwald/go-jira"
+	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
 )
 
 func CreateIssue(ticketDetail model.JiraRequest) string {
-	base := "https://danaindonesia.atlassian.net"
+	base := config.JiraUrl
 	tp := jira.BasicAuthTransport{
-		Username: "onduty.bot@dana.id",
-		Password: "tnTynAPy8TCQz32cfnC7DB47",
+		Username: config.JiraUsername,
+		Password: config.JiraToken,
 	}
 
 	jiraClient, err := jira.NewClient(tp.Client(), base)
@@ -22,10 +23,10 @@ func CreateIssue(ticketDetail model.JiraRequest) string {
 	i := jira.Issue{
 		Fields: &jira.IssueFields{
 			Assignee: &jira.User{
-				Name: "myuser",
+				Name: ticketDetail.Assignee,
 			},
 			Reporter: &jira.User{
-				Name: "youruser",
+				Name: ticketDetail.Reporter,
 			},
 			Description: ticketDetail.Description,
 			Type: jira.IssueType{

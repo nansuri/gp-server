@@ -13,7 +13,7 @@ type JiraRequest struct {
 
 type JiraResult struct {
 	Status bool   `json:"success"`
-	Key    string `json:jira_key`
+	Key    string `json:"jira_key"`
 }
 
 type JiraTicketDetails struct {
