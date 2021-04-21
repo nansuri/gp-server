@@ -23,10 +23,10 @@ func CreateIssue(ticketDetail model.JiraRequest) string {
 	i := jira.Issue{
 		Fields: &jira.IssueFields{
 			Assignee: &jira.User{
-				AccountID: ticketDetail.Assignee,
+				EmailAddress: ticketDetail.Assignee,
 			},
 			Reporter: &jira.User{
-				AccountID: ticketDetail.Reporter,
+				EmailAddress: ticketDetail.Reporter,
 			},
 			Description: ticketDetail.Description,
 			Type: jira.IssueType{
