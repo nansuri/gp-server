@@ -14,7 +14,7 @@ import (
 
 // List all of User API
 func JiraBridgeAPI(router *mux.Router) {
-	router.HandleFunc("/createJiraIssue", CreateJiraIssue).Methods("GET")
+	router.HandleFunc("/createJiraIssue", CreateJiraIssue).Methods("POST")
 }
 
 // Test json request body
