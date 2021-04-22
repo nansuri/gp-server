@@ -18,7 +18,7 @@ func main() {
 	// List of all registered API
 	controller.ListAllUserAPI(router, "user")
 	controller.ListAllCipherAPI(router, "cipher")
-	controller.JiraBridgeAPI(router)
+	controller.JiraBridgeAPI(router, "jira")
 
 	// Handler
 	http.Handle("/", router)

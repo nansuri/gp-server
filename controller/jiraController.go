@@ -11,8 +11,8 @@ import (
 )
 
 // List all of User API
-func JiraBridgeAPI(router *mux.Router) {
-	router.HandleFunc("/jira/create", CreateJiraIssue).Methods("POST")
+func JiraBridgeAPI(router *mux.Router, prefix string) {
+	router.HandleFunc("/"+prefix+"/create", CreateJiraIssue).Methods("POST")
 }
 
 // Test json request body

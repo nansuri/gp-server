@@ -1,8 +1,6 @@
 package util
 
 import (
-	"log"
-
 	jira "github.com/andygrunwald/go-jira"
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
@@ -23,7 +21,6 @@ func CreateJiraIssue(ticketDetail model.JiraRequest) (key string, errorMessage s
 	if err != nil {
 		// panic(err)
 		errorMessage = "system error"
-		log.Fatal(errorMessage)
 	}
 
 	i := jira.Issue{
