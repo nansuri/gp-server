@@ -5,13 +5,13 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nansuri/gp-server/model"
-	"github.com/nansuri/gp-server/util"
+	util "github.com/nansuri/gp-server/service"
 )
 
 // List all of User API
-func ListAllCipherAPI(router *mux.Router) {
-	router.HandleFunc("/encryptData", EncryptData).Methods("POST")
-	router.HandleFunc("/decryptData", DecryptData).Methods("POST")
+func ListAllCipherAPI(router *mux.Router, prefix string) {
+	router.HandleFunc("/"+prefix+"/encrypt", EncryptData).Methods("POST")
+	router.HandleFunc("/"+prefix+"/decrypt", DecryptData).Methods("POST")
 }
 
 func EncryptData(w http.ResponseWriter, r *http.Request) {

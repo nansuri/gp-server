@@ -1,20 +1,18 @@
 package controller
 
 import (
-	"errors"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	config "github.com/nansuri/gp-server/config"
-	"github.com/nansuri/gp-server/model"
-	util "github.com/nansuri/gp-server/util"
+	model "github.com/nansuri/gp-server/model"
+	util "github.com/nansuri/gp-server/service"
 )
 
 // List all of User API
 func JiraBridgeAPI(router *mux.Router) {
-	router.HandleFunc("/createJiraIssue", CreateJiraIssue).Methods("POST")
+	router.HandleFunc("/jira/create", CreateJiraIssue).Methods("POST")
 }
 
 // Test json request body
@@ -26,20 +24,10 @@ func CreateJiraIssue(w http.ResponseWriter, r *http.Request) {
 	var response model.JiraResult
 
 	// JSON Body decoder
-	err := decodeJSONBody(w, r, &request)
-	if err != nil {
-		var mr *malformedRequest
-		if errors.As(err, &mr) {
-			http.Error(w, mr.errorMessage, mr.status)
-		} else {
-			log.Println(err.Error())
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
-		return
-	}
+	decodeRequest(w, r, &request)
 
 	// Logic
-	response.Key = util.CreateIssue(request)
+	response.Key, response.Error = util.CreateJiraIssue(request)
 
 	switch request.Project {
 	case "MEMO":
@@ -51,7 +39,11 @@ func CreateJiraIssue(w http.ResponseWriter, r *http.Request) {
 	util.SendNotification(token, request, response.Key)
 
 	// Assemble the response
-	response.Status = true
+	if response.Error == "" {
+		response.Status = true
+	} else {
+		response.Status = false
+	}
 
 	// Send response
 	EncodeResponse(w, r, response)

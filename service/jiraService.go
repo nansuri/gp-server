@@ -1,14 +1,18 @@
 package util
 
 import (
-	"fmt"
+	"log"
 
 	jira "github.com/andygrunwald/go-jira"
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
 )
 
-func CreateIssue(ticketDetail model.JiraRequest) string {
+func CreateJiraIssue(ticketDetail model.JiraRequest) (key string, errorMessage string) {
+
+	var jiraKey string
+	_ = jiraKey
+
 	base := config.JiraUrl
 	tp := jira.BasicAuthTransport{
 		Username: config.JiraUsername,
@@ -17,7 +21,9 @@ func CreateIssue(ticketDetail model.JiraRequest) string {
 
 	jiraClient, err := jira.NewClient(tp.Client(), base)
 	if err != nil {
-		panic(err)
+		// panic(err)
+		errorMessage = "system error"
+		log.Fatal(errorMessage)
 	}
 
 	i := jira.Issue{
@@ -43,9 +49,14 @@ func CreateIssue(ticketDetail model.JiraRequest) string {
 	}
 	issue, _, err := jiraClient.Issue.Create(&i)
 	if err != nil {
-		panic(err)
+		// panic(err)
+		errorMessage = "value on request body is invalid"
 	}
 
-	fmt.Printf("\nThe key is %s", issue.Key)
-	return issue.Key
+	if issue == nil {
+		jiraKey = ""
+	} else {
+		jiraKey = issue.Key
+	}
+	return jiraKey, errorMessage
 }

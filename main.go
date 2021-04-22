@@ -11,13 +11,16 @@ import (
 )
 
 func main() {
+	// Initialization
 	var port string = "3025"
 	router := mux.NewRouter()
 
-	controller.ListAllUserAPI(router)
-	controller.ListAllCipherAPI(router)
+	// List of all registered API
+	controller.ListAllUserAPI(router, "user")
+	controller.ListAllCipherAPI(router, "cipher")
 	controller.JiraBridgeAPI(router)
 
+	// Handler
 	http.Handle("/", router)
 	fmt.Println("==== Server Listen on port " + port + " ===")
 	log.Fatal(http.ListenAndServe(":"+port, router))

@@ -8,13 +8,13 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nansuri/gp-server/model"
-	"github.com/nansuri/gp-server/util"
+	util "github.com/nansuri/gp-server/service"
 )
 
 // List all of User API
-func ListAllUserAPI(router *mux.Router) {
-	router.HandleFunc("/pingUser", TestParseAndReturn).Methods("POST")
-	router.HandleFunc("/getToken", GetToken).Methods("POST")
+func ListAllUserAPI(router *mux.Router, prefix string) {
+	router.HandleFunc("/"+prefix+"/ping", TestParseAndReturn).Methods("POST")
+	router.HandleFunc("/"+prefix+"/token", GetToken).Methods("POST")
 }
 
 // Test json request body
