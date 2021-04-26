@@ -22,7 +22,6 @@ func (mr *malformedRequest) Error() string {
 }
 
 // Request decoder and validation
-
 func decodeRequest(w http.ResponseWriter, request *http.Request, dataStruct interface{}) {
 	err := decodeJSONBody(w, request, dataStruct)
 	if err != nil {
@@ -35,6 +34,10 @@ func decodeRequest(w http.ResponseWriter, request *http.Request, dataStruct inte
 		}
 		return
 	}
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 func decodeToken(w http.ResponseWriter, request *http.Request) string {
@@ -50,6 +53,9 @@ func decodeToken(w http.ResponseWriter, request *http.Request) string {
 **/
 
 func decodeJSONBody(w http.ResponseWriter, request *http.Request, dataStruct interface{}) error {
+
+	enableCors(&w)
+
 	if request.Header.Get("Content-Type") != "" {
 		value, _ := header.ParseValueAndParams(request.Header, "Content-Type")
 		if value != "application/json" {

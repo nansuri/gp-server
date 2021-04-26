@@ -22,7 +22,7 @@ func SendNotification(token string, ticketDetail model.JiraRequest, key string) 
 			"atMobiles": [
 				"6285224056939"
 			],
-			"isAtAll": ` + ticketDetail.IsUrgent + `
+			"isAtAll":true
 		}
 	}`
 

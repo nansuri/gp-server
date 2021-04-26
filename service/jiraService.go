@@ -1,12 +1,18 @@
 package util
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+
 	jira "github.com/andygrunwald/go-jira"
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
 )
 
-func CreateJiraIssue(ticketDetail model.JiraRequest) (key string, errorMessage string) {
+func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key string, errorMessage string) {
 
 	var jiraKey string
 	_ = jiraKey
@@ -21,15 +27,16 @@ func CreateJiraIssue(ticketDetail model.JiraRequest) (key string, errorMessage s
 	if err != nil {
 		// panic(err)
 		errorMessage = "system error"
+		println(errorMessage)
 	}
 
 	i := jira.Issue{
 		Fields: &jira.IssueFields{
 			Assignee: &jira.User{
-				EmailAddress: ticketDetail.Assignee,
+				AccountID: GetAccountIdByEmail(ticketDetail.Assignee),
 			},
 			Reporter: &jira.User{
-				EmailAddress: ticketDetail.Reporter,
+				AccountID: GetAccountIdByEmail(ticketDetail.Reporter),
 			},
 			Description: ticketDetail.Description,
 			Type: jira.IssueType{
@@ -48,6 +55,7 @@ func CreateJiraIssue(ticketDetail model.JiraRequest) (key string, errorMessage s
 	if err != nil {
 		// panic(err)
 		errorMessage = "value on request body is invalid"
+		println(errorMessage)
 	}
 
 	if issue == nil {
@@ -56,4 +64,42 @@ func CreateJiraIssue(ticketDetail model.JiraRequest) (key string, errorMessage s
 		jiraKey = issue.Key
 	}
 	return jiraKey, errorMessage
+}
+
+func GetAccountIdByEmail(email string) string {
+
+	var userRes model.JiraUserResponse
+
+	url := config.JiraUrl + "/rest/api/2/user/search?query=" + email
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Authorization", "Basic b25kdXR5LmJvdEBkYW5hLmlkOnRuVHluQVB5OFRDUXozMmNmbkM3REI0Nw==")
+	// req.Header.Add("Cookie", "atlassian.xsrf.token=82a67398-2cf2-4f41-9d44-44664d6f572e_cb08ba08f15d6a87097e21db7430e1a27c377ff9_lin")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	stringResponse := string(body)
+	trimmedString1 := strings.Trim(stringResponse, "[")
+	trimmedString2 := strings.Trim(trimmedString1, "]")
+
+	json.Unmarshal([]byte(trimmedString2), &userRes)
+	// println(string(body))
+
+	return userRes.AccountId
 }

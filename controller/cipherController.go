@@ -17,8 +17,8 @@ func ListAllCipherAPI(router *mux.Router, prefix string) {
 func EncryptData(w http.ResponseWriter, r *http.Request) {
 
 	// Define your request and response data struct here
-	var request model.GeneralRequest
-	var response model.GeneralResponse
+	var request model.CipherRequest
+	var response model.CipherResponse
 
 	// JSON Body decoder
 	decodeRequest(w, r, &request)
@@ -33,8 +33,8 @@ func EncryptData(w http.ResponseWriter, r *http.Request) {
 func DecryptData(w http.ResponseWriter, r *http.Request) {
 
 	// Define your request and response data struct here
-	var request model.GeneralRequest
-	var response model.GeneralResponse
+	var request model.CipherRequest
+	var response model.CipherResponse
 
 	// JSON Body decoder
 	decodeRequest(w, r, &request)
