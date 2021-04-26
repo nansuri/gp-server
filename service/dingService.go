@@ -16,7 +16,7 @@ func SendNotification(token string, ticketDetail model.JiraRequest, key string) 
 	rawPayload := `{
 		"msgtype": "text",
 		"text": {
-			"content": "Hi member on duty, you have a new issue posted by ` + ticketDetail.Reporter + `\n- Ticket ID : ` + key + `\n- Title : ` + ticketDetail.Summary + `\n- Link : https://danaindonesia.atlassian.net/browse/` + key + `"
+			"content": "Hi member on duty, you have a new issue posted by ` + ticketDetail.Reporter + `\n- Ticket ID : ` + key + `\n- Title : ` + ticketDetail.Summary + `\n- Link : https://danaindonesia.atlassian.net/browse/` + key + ` "
 		},
 		"at": {
 			"atMobiles": [
