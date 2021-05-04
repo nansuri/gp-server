@@ -10,7 +10,6 @@ type JiraRequest struct {
 	Type         string `json:"type"`
 	AssigneeRole string `json:"assignee_role"`
 	IsUrgent     string `json:"is_urgent"`
-	Role         string `json:"role"`
 	ExtendInfo   string `json:"extend_info"`
 }
 

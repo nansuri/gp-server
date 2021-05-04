@@ -32,7 +32,7 @@ func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key strin
 
 	// var labels []string
 	labels := make([]string, 5)
-	labels[0] = "QA"
+	labels[0] = ticketDetail.AssigneeRole
 
 	i := jira.Issue{
 		Fields: &jira.IssueFields{
