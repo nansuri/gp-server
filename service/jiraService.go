@@ -20,7 +20,7 @@ func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key strin
 	base := config.JiraUrl
 	tp := jira.BasicAuthTransport{
 		Username: config.JiraUsername,
-		Password: config.JiraToken,
+		Password: Decrypt(config.EncryptedJiraToken),
 	}
 
 	jiraClient, err := jira.NewClient(tp.Client(), base)
@@ -29,6 +29,10 @@ func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key strin
 		errorMessage = "system error"
 		println(errorMessage)
 	}
+
+	// var labels []string
+	labels := make([]string, 5)
+	labels[0] = "QA"
 
 	i := jira.Issue{
 		Fields: &jira.IssueFields{
@@ -49,6 +53,7 @@ func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key strin
 				Name: ticketDetail.Priority,
 			},
 			Summary: ticketDetail.Summary,
+			Labels:  labels,
 		},
 	}
 	issue, _, err := jiraClient.Issue.Create(&i)
@@ -80,7 +85,7 @@ func GetAccountIdByEmail(email string) string {
 		fmt.Println(err)
 	}
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", "Basic b25kdXR5LmJvdEBkYW5hLmlkOnRuVHluQVB5OFRDUXozMmNmbkM3REI0Nw==")
+	req.Header.Add("Authorization", Decrypt(config.EncryptedAuth))
 	// req.Header.Add("Cookie", "atlassian.xsrf.token=82a67398-2cf2-4f41-9d44-44664d6f572e_cb08ba08f15d6a87097e21db7430e1a27c377ff9_lin")
 
 	res, err := client.Do(req)

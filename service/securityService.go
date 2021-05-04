@@ -7,7 +7,6 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/hex"
-	"fmt"
 
 	"github.com/nansuri/gp-server/config"
 )
@@ -68,7 +67,7 @@ func Decrypt(encryptedString string) (decryptedString string) {
 
 	decodeString, err := base64.StdEncoding.DecodeString(encryptedString)
 	if err != nil {
-		fmt.Println("!! - Decryption Failed")
+		// fmt.Println("!! - Decryption Failed")
 		return ""
 	}
 
@@ -88,7 +87,7 @@ func Decrypt(encryptedString string) (decryptedString string) {
 
 	plaintext, err := aesgcm.Open(nil, nonce, decodeString, nil)
 	if plaintext != nil {
-		fmt.Println("OK - Decryption Success")
+		// fmt.Println("OK - Decryption Success")
 	}
 	if err != nil {
 		return ""
