@@ -1,0 +1,14 @@
+INFO: 2021/05/06 15:16:41 main.go:27: ==== Server Listen on port 3025 ===
+WARNING: 2021/05/06 15:16:51 jiraController.go:43: Ding token not provided
+INFO: 2021/05/06 15:16:52 jiraService.go:108: GetAccountIdByEmail userId : 
+INFO: 2021/05/06 15:16:52 jiraService.go:108: GetAccountIdByEmail userId : 5d9c5e020d44fc0dca5400d2
+ERROR: 2021/05/06 15:16:52 jiraService.go:65: Value on request body is invalid
+WARNING: 2021/05/06 15:17:10 jiraController.go:43: Ding token not provided
+INFO: 2021/05/06 15:17:10 jiraService.go:108: GetAccountIdByEmail userId : 
+INFO: 2021/05/06 15:17:10 jiraService.go:108: GetAccountIdByEmail userId : 5d9c5e020d44fc0dca5400d2
+ERROR: 2021/05/06 15:17:10 jiraService.go:65: Value on request body is invalid
+2021/05/06 15:17:36 main.go:27: INFO: ==== Server Listen on port 3025 ===
+WARNING: 2021/05/06 15:17:40 jiraController.go:43: Ding token not provided
+2021/05/06 15:17:40 jiraService.go:108: INFO: GetAccountIdByEmail userId : 
+2021/05/06 15:17:40 jiraService.go:108: INFO: GetAccountIdByEmail userId : 5d9c5e020d44fc0dca5400d2
+ERROR: 2021/05/06 15:17:41 jiraService.go:65: Value on request body is invalid

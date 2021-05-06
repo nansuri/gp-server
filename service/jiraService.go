@@ -105,7 +105,7 @@ func GetAccountIdByEmail(email string) string {
 	trimmedString2 := strings.Trim(trimmedString1, "]")
 
 	json.Unmarshal([]byte(trimmedString2), &userRes)
-	util.InfoLogger.Println("GetAccountIdByEmail Response : " + string(body))
+	util.InfoLogger.Println("GetAccountIdByEmail userId : " + userRes.AccountId)
 
 	return userRes.AccountId
 }
