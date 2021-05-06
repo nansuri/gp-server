@@ -5,7 +5,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/nansuri/gp-server/model"
-	util "github.com/nansuri/gp-server/service"
+	service "github.com/nansuri/gp-server/service"
 )
 
 // List all of User API
@@ -24,7 +24,7 @@ func EncryptData(w http.ResponseWriter, r *http.Request) {
 	decodeRequest(w, r, &request)
 
 	// Assemble the response
-	response.EncryptedData = util.Encrypt(request.Data)
+	response.EncryptedData = service.Encrypt(request.Data)
 
 	// Send response
 	EncodeResponse(w, r, response)
@@ -40,7 +40,7 @@ func DecryptData(w http.ResponseWriter, r *http.Request) {
 	decodeRequest(w, r, &request)
 	token := decodeToken(w, r)
 
-	data := util.Decrypt(request.DataByte)
+	data := service.Decrypt(request.DataByte)
 
 	// Assemble the response
 	response.Data = string(data)

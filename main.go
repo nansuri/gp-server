@@ -7,7 +7,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
-	"github.com/nansuri/gp-server/controller"
+	controller "github.com/nansuri/gp-server/controller"
+	util "github.com/nansuri/gp-server/util"
 )
 
 func main() {
@@ -23,5 +24,6 @@ func main() {
 	// Handler
 	http.Handle("/", router)
 	fmt.Println("==== Server Listen on port " + port + " ===")
+	util.InfoLogger.Println("==== Server Listen on port " + port + " ===")
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }

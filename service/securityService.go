@@ -48,14 +48,17 @@ func Encrypt(plainString string) []byte {
 	block, err := aes.NewCipher([]byte(key))
 
 	if err != nil {
-		panic(err.Error())
+		// util.InfoLogger.Println("Encryption `" + plainString + "` FAILED\n" + err.Error())
 	}
 	nonce := make([]byte, NONCESIZE)
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		panic(err.Error())
+		// util.InfoLogger.Println("Encryption `" + plainString + "` FAILED\n" + err.Error())
 	}
 	ciphertext := aesgcm.Seal(nil, nonce, textByte, nil)
+	if ciphertext != nil {
+		// util.InfoLogger.Println("Encryption `" + plainString + "` SUCCESS")
+	}
 	return ciphertext
 }
 
@@ -67,31 +70,31 @@ func Decrypt(encryptedString string) (decryptedString string) {
 
 	decodeString, err := base64.StdEncoding.DecodeString(encryptedString)
 	if err != nil {
-		// fmt.Println("!! - Decryption Failed")
+		// util.ErrorLogger.Println("Decryption `" + encryptedString + "` FAILED\n" + err.Error())
 		return ""
 	}
 
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
+		// util.ErrorLogger.Println("Decryption `" + encryptedString + "` FAILED\n" + err.Error())
 		return ""
-		panic(err.Error())
 	}
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
+		// util.ErrorLogger.Println("Decryption " + encryptedString + " FAILED\n" + err.Error())
 		return ""
-		panic(err.Error())
 	}
 
 	nonce := make([]byte, NONCESIZE)
 
 	plaintext, err := aesgcm.Open(nil, nonce, decodeString, nil)
 	if plaintext != nil {
-		// fmt.Println("OK - Decryption Success")
+		// util.InfoLogger.Println("Decryption `" + encryptedString + "` SUCCESS")
 	}
 	if err != nil {
+		// util.ErrorLogger.Println("Decryption `" + encryptedString + "` FAILED\n" + err.Error())
 		return ""
-		panic(err.Error())
 	}
 	return string(plaintext)
 }

@@ -1,12 +1,12 @@
 package util
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
 	model "github.com/nansuri/gp-server/model"
+	"github.com/nansuri/gp-server/util"
 )
 
 func SendNotification(token string, ticketDetail model.JiraRequest, key string) {
@@ -32,23 +32,23 @@ func SendNotification(token string, ticketDetail model.JiraRequest, key string) 
 	req, err := http.NewRequest(method, url, payload)
 
 	if err != nil {
-		fmt.Println(err)
+		util.ErrorLogger.Println(err)
 		return
 	}
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		util.ErrorLogger.Println(err)
 		return
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		util.ErrorLogger.Println(err)
 		return
 	}
 
-	fmt.Println("\n" + string(body))
+	util.InfoLogger.Println(string(body))
 }

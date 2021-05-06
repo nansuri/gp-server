@@ -10,6 +10,7 @@ import (
 	jira "github.com/andygrunwald/go-jira"
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
+	util "github.com/nansuri/gp-server/util"
 )
 
 func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key string, errorMessage string) {
@@ -25,9 +26,8 @@ func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key strin
 
 	jiraClient, err := jira.NewClient(tp.Client(), base)
 	if err != nil {
-		// panic(err)
-		errorMessage = "system error"
-		println(errorMessage)
+		util.ErrorLogger.Fatal("Jira Error\n" + err.Error())
+		// println(errorMessage)
 	}
 
 	// var labels []string
@@ -58,9 +58,8 @@ func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key strin
 	}
 	issue, _, err := jiraClient.Issue.Create(&i)
 	if err != nil {
-		// panic(err)
-		errorMessage = "value on request body is invalid"
-		println(errorMessage)
+		errorMessage = "Value on request body is invalid"
+		util.ErrorLogger.Println(errorMessage)
 	}
 
 	if issue == nil {
@@ -86,7 +85,6 @@ func GetAccountIdByEmail(email string) string {
 	}
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Authorization", Decrypt(config.EncryptedAuth))
-	// req.Header.Add("Cookie", "atlassian.xsrf.token=82a67398-2cf2-4f41-9d44-44664d6f572e_cb08ba08f15d6a87097e21db7430e1a27c377ff9_lin")
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -96,7 +94,7 @@ func GetAccountIdByEmail(email string) string {
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		util.ErrorLogger.Println("Get Account FAILED")
 	}
 
 	stringResponse := string(body)
@@ -104,7 +102,7 @@ func GetAccountIdByEmail(email string) string {
 	trimmedString2 := strings.Trim(trimmedString1, "]")
 
 	json.Unmarshal([]byte(trimmedString2), &userRes)
-	// println(string(body))
+	util.InfoLogger.Println("GetAccountIdByEmail Response : " + string(body))
 
 	return userRes.AccountId
 }

@@ -1,13 +1,14 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
+
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
-	util "github.com/nansuri/gp-server/service"
+	service "github.com/nansuri/gp-server/service"
+	util "github.com/nansuri/gp-server/util"
 )
 
 // List all of User API
@@ -39,12 +40,13 @@ func CreateJiraIssue(w http.ResponseWriter, r *http.Request) {
 	case "MPO":
 		token = config.DingMerchantPortal
 	default:
-		fmt.Println("\nInvalid ding token")
+		util.WarningLogger.Println("Ding token not provided")
 	}
 
-	response.Key, response.Error = util.CreateJiraIssue(request, assignee)
-
-	util.SendNotification(token, request, response.Key)
+	response.Key, response.Error = service.CreateJiraIssue(request, assignee)
+	if request.Priority == "Blocker" || request.Priority == "Critical" {
+		service.SendNotification(token, request, response.Key)
+	}
 
 	// Assemble the response
 	if response.Error == "" {
@@ -68,7 +70,7 @@ func GetAccountIdByEmailAPI(w http.ResponseWriter, r *http.Request) {
 	decodeRequest(w, r, &request)
 
 	// Logic
-	response.DataOutput = util.GetAccountIdByEmail(request.DataInput)
+	response.DataOutput = service.GetAccountIdByEmail(request.DataInput)
 
 	// Send response
 	EncodeResponse(w, r, response)

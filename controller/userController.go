@@ -2,13 +2,13 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/nansuri/gp-server/model"
-	util "github.com/nansuri/gp-server/service"
+	service "github.com/nansuri/gp-server/service"
+	util "github.com/nansuri/gp-server/util"
 )
 
 // List all of User API
@@ -57,7 +57,7 @@ func GetToken(w http.ResponseWriter, r *http.Request) {
 	decodeRequest(w, r, &getTokenRequest)
 
 	// Some Logic Here
-	decryptedUserInfo := util.Decrypt(getTokenRequest.EncryptedUserInfo)
+	decryptedUserInfo := service.Decrypt(getTokenRequest.EncryptedUserInfo)
 	if decryptedUserInfo == "" {
 		isSuccess = false
 		errorContext = "Invalid Encryption Info"
@@ -67,23 +67,26 @@ func GetToken(w http.ResponseWriter, r *http.Request) {
 
 	switch getTokenRequest.Scope {
 	case "TESTRAILEXPORTER":
-		fmt.Println("Scope is TESTRAILEXPORTER with " + decryptedUserInfo)
+		// fmt.Println("Scope is TESTRAILEXPORTER with " + decryptedUserInfo)
+		util.InfoLogger.Println("Scope is TESTRAILEXPORTER with " + decryptedUserInfo)
 	case "GENERAL":
-		fmt.Println("Scope is GENERAL")
+		// fmt.Println("Scope is GENERAL")
+		util.InfoLogger.Println("Scope is GENERAL with " + decryptedUserInfo)
 	default:
 		isSuccess = false
 		errorContext = "Invalid Scope"
 	}
 
-	token := util.QueryTokenByUserInfoAndScope(getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
+	token := service.QueryTokenByUserInfoAndScope(getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
 	if token == "" && getTokenRequest.Scope != "" && isSuccess {
-		fmt.Println("Generate token now")
-		token = util.GenerateTokenAndStore("userId", getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
+		util.InfoLogger.Println("Generating Token")
+		token = service.GenerateTokenAndStore("userId", getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
 	}
 
 	// send response
 	getTokenResponse.Token = token
 	getTokenResponse.Status = isSuccess
 	getTokenResponse.Error = errorContext
+
 	EncodeResponse(w, r, getTokenResponse)
 }
