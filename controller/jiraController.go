@@ -8,7 +8,7 @@ import (
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
 	service "github.com/nansuri/gp-server/service"
-	util "github.com/nansuri/gp-server/util"
+	logger "github.com/sirupsen/logrus"
 )
 
 // List all of User API
@@ -40,7 +40,7 @@ func CreateJiraIssue(w http.ResponseWriter, r *http.Request) {
 	case "MPO":
 		token = config.DingMerchantPortal
 	default:
-		util.WarningLogger.Println("Ding token not provided")
+		logger.Warn("Ding token not provided")
 	}
 
 	response.Key, response.Error = service.CreateJiraIssue(request, assignee)

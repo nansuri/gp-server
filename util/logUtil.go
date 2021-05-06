@@ -1,13 +1,9 @@
 package util
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"log"
 	"os"
 	"time"
-
-	"github.com/nansuri/gp-server/config"
 )
 
 var (
@@ -27,12 +23,4 @@ func init() {
 	InfoLogger = log.New(file, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	WarningLogger = log.New(file, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
 	ErrorLogger = log.New(file, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
-}
-
-func GenerateSecureToken() string {
-	b := make([]byte, config.DefaultTokenLength)
-	if _, err := rand.Read(b); err != nil {
-		return ""
-	}
-	return hex.EncodeToString(b)
 }

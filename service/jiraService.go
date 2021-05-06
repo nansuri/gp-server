@@ -10,7 +10,7 @@ import (
 	jira "github.com/andygrunwald/go-jira"
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
-	util "github.com/nansuri/gp-server/util"
+	logger "github.com/sirupsen/logrus"
 )
 
 /**
@@ -30,7 +30,7 @@ func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key strin
 
 	jiraClient, err := jira.NewClient(tp.Client(), base)
 	if err != nil {
-		util.ErrorLogger.Fatal("Jira Error\n" + err.Error())
+		logger.Error("Jira Error\n" + err.Error())
 	}
 
 	// var labels []string
@@ -62,7 +62,7 @@ func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key strin
 	issue, _, err := jiraClient.Issue.Create(&i)
 	if err != nil {
 		errorMessage = "Value on request body is invalid"
-		util.ErrorLogger.Println(errorMessage)
+		logger.Error(errorMessage)
 	}
 
 	if issue == nil {
@@ -91,13 +91,15 @@ func GetAccountIdByEmail(email string) string {
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		// fmt.Println(err)
+		logger.WithFields(logger.Fields{"Error : ": err.Error()}).Error("GetAccountIdByEmail Error")
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		util.ErrorLogger.Println("Get Account FAILED")
+		// util.ErrorLogger.Println("Get Account FAILED")
+		logger.Error("GetAccountIdByEmail FAILED")
 	}
 
 	stringResponse := string(body)
@@ -105,7 +107,9 @@ func GetAccountIdByEmail(email string) string {
 	trimmedString2 := strings.Trim(trimmedString1, "]")
 
 	json.Unmarshal([]byte(trimmedString2), &userRes)
-	util.InfoLogger.Println("GetAccountIdByEmail userId : " + userRes.AccountId)
+
+	// Logger
+	logger.WithFields(logger.Fields{"Jira accountId": userRes.AccountId}).Info("GetAccountIdByEmail")
 
 	return userRes.AccountId
 }
