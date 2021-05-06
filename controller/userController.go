@@ -67,10 +67,8 @@ func GetToken(w http.ResponseWriter, r *http.Request) {
 
 	switch getTokenRequest.Scope {
 	case "TESTRAILEXPORTER":
-		// fmt.Println("Scope is TESTRAILEXPORTER with " + decryptedUserInfo)
 		util.InfoLogger.Println("Scope is TESTRAILEXPORTER with " + decryptedUserInfo)
 	case "GENERAL":
-		// fmt.Println("Scope is GENERAL")
 		util.InfoLogger.Println("Scope is GENERAL with " + decryptedUserInfo)
 	default:
 		isSuccess = false

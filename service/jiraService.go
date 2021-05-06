@@ -13,6 +13,10 @@ import (
 	util "github.com/nansuri/gp-server/util"
 )
 
+/**
+/ CreateJiraIssue
+**/
+
 func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key string, errorMessage string) {
 
 	var jiraKey string
@@ -27,7 +31,6 @@ func CreateJiraIssue(ticketDetail model.JiraRequest, assignee string) (key strin
 	jiraClient, err := jira.NewClient(tp.Client(), base)
 	if err != nil {
 		util.ErrorLogger.Fatal("Jira Error\n" + err.Error())
-		// println(errorMessage)
 	}
 
 	// var labels []string
