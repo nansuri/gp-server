@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nansuri/gp-server/model"
 	service "github.com/nansuri/gp-server/service"
-	util "github.com/nansuri/gp-server/util"
+	logger "github.com/sirupsen/logrus"
 )
 
 // List all of User API
@@ -67,24 +67,28 @@ func GetToken(w http.ResponseWriter, r *http.Request) {
 
 	switch getTokenRequest.Scope {
 	case "TESTRAILEXPORTER":
-		util.InfoLogger.Println("Scope is TESTRAILEXPORTER with " + decryptedUserInfo)
+		logger.WithFields(logger.Fields{"Scope": getTokenRequest.Scope}).Info("GetToken")
 	case "GENERAL":
-		util.InfoLogger.Println("Scope is GENERAL with " + decryptedUserInfo)
+		logger.WithFields(logger.Fields{"Scope": getTokenRequest.Scope}).Info("GetToken")
 	default:
 		isSuccess = false
 		errorContext = "Invalid Scope"
+		logger.WithFields(logger.Fields{"Scope": getTokenRequest.Scope}).Info("GetToken")
 	}
 
 	token := service.QueryTokenByUserInfoAndScope(getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
 	if token == "" && getTokenRequest.Scope != "" && isSuccess {
-		util.InfoLogger.Println("Generating Token")
+		// util.InfoLogger.Println("Generating Token")
 		token = service.GenerateTokenAndStore("userId", getTokenRequest.EncryptedUserInfo, getTokenRequest.Scope)
+		logger.WithFields(logger.Fields{"Scope": getTokenRequest.Scope, "Token": token}).Warn("GetToken Result")
 	}
 
 	// send response
 	getTokenResponse.Token = token
 	getTokenResponse.Status = isSuccess
 	getTokenResponse.Error = errorContext
+
+	logger.WithFields(logger.Fields{"Token": token}).Info("GetToken")
 
 	EncodeResponse(w, r, getTokenResponse)
 }

@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	model "github.com/nansuri/gp-server/model"
-	"github.com/nansuri/gp-server/util"
+	logger "github.com/sirupsen/logrus"
 )
 
 func SendNotification(token string, ticketDetail model.JiraRequest, key string) {
@@ -32,23 +32,26 @@ func SendNotification(token string, ticketDetail model.JiraRequest, key string) 
 	req, err := http.NewRequest(method, url, payload)
 
 	if err != nil {
-		util.ErrorLogger.Println(err)
+		// util.ErrorLogger.Println(err)
+		logger.Info(err.Error())
 		return
 	}
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := client.Do(req)
 	if err != nil {
-		util.ErrorLogger.Println(err)
+		// util.ErrorLogger.Println(err)
+		logger.Info(err.Error())
 		return
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		util.ErrorLogger.Println(err)
+		// util.ErrorLogger.Println(err)
+		logger.Info(err.Error())
 		return
 	}
 
-	util.InfoLogger.Println(string(body))
+	logger.WithFields(logger.Fields{"Ding response": string(body)}).Info("Ding SendNotification")
 }

@@ -30,6 +30,8 @@ func CreateJiraIssue(w http.ResponseWriter, r *http.Request) {
 	decodeRequest(w, r, &request)
 
 	// Logic
+	logger.WithFields(logger.Fields{"Project": request.Project, "Summary": request.Summary, "Reporter": request.Reporter}).Info("CreateJiraIssue")
+
 	switch request.Project {
 	case "MEMO":
 		token = config.DingMember
@@ -40,17 +42,18 @@ func CreateJiraIssue(w http.ResponseWriter, r *http.Request) {
 	case "MPO":
 		token = config.DingMerchantPortal
 	default:
-		logger.Warn("Ding token not provided")
+		logger.WithFields(logger.Fields{"Project": request.Project}).Warn("Ding token not provided")
 	}
 
 	response.Key, response.Error = service.CreateJiraIssue(request, assignee)
-	if request.Priority == "Blocker" || request.Priority == "Critical" {
+	if request.Priority == "Blocker" || request.Priority == "Critical" || request.IsUrgent == "true" {
 		service.SendNotification(token, request, response.Key)
 	}
 
 	// Assemble the response
 	if response.Error == "" {
 		response.Status = true
+		logger.WithFields(logger.Fields{"Key": response.Key}).Info("Jira Issue Created")
 	} else {
 		response.Status = false
 	}
