@@ -1,12 +1,12 @@
 package util
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
 	model "github.com/nansuri/gp-server/model"
+	logger "github.com/sirupsen/logrus"
 )
 
 func SendNotification(token string, ticketDetail model.JiraRequest, key string) {
@@ -22,7 +22,7 @@ func SendNotification(token string, ticketDetail model.JiraRequest, key string) 
 			"atMobiles": [
 				"6285224056939"
 			],
-			"isAtAll": ` + ticketDetail.IsUrgent + `
+			"isAtAll":true
 		}
 	}`
 
@@ -32,23 +32,26 @@ func SendNotification(token string, ticketDetail model.JiraRequest, key string) 
 	req, err := http.NewRequest(method, url, payload)
 
 	if err != nil {
-		fmt.Println(err)
+		// util.ErrorLogger.Println(err)
+		logger.Info(err.Error())
 		return
 	}
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		// util.ErrorLogger.Println(err)
+		logger.Info(err.Error())
 		return
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		// util.ErrorLogger.Println(err)
+		logger.Info(err.Error())
 		return
 	}
 
-	fmt.Println("\n" + string(body))
+	logger.WithFields(logger.Fields{"Ding response": string(body)}).Info("Ding SendNotification")
 }

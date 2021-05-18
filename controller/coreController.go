@@ -10,6 +10,8 @@ import (
 	"strings"
 
 	"github.com/golang/gddo/httputil/header"
+
+	logger "github.com/sirupsen/logrus"
 )
 
 type malformedRequest struct {
@@ -22,7 +24,6 @@ func (mr *malformedRequest) Error() string {
 }
 
 // Request decoder and validation
-
 func decodeRequest(w http.ResponseWriter, request *http.Request, dataStruct interface{}) {
 	err := decodeJSONBody(w, request, dataStruct)
 	if err != nil {
@@ -35,6 +36,10 @@ func decodeRequest(w http.ResponseWriter, request *http.Request, dataStruct inte
 		}
 		return
 	}
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 func decodeToken(w http.ResponseWriter, request *http.Request) string {
@@ -50,6 +55,9 @@ func decodeToken(w http.ResponseWriter, request *http.Request) string {
 **/
 
 func decodeJSONBody(w http.ResponseWriter, request *http.Request, dataStruct interface{}) error {
+
+	enableCors(&w)
+
 	if request.Header.Get("Content-Type") != "" {
 		value, _ := header.ParseValueAndParams(request.Header, "Content-Type")
 		if value != "application/json" {
@@ -71,27 +79,33 @@ func decodeJSONBody(w http.ResponseWriter, request *http.Request, dataStruct int
 		switch {
 		case errors.As(err, &syntaxError):
 			msg := fmt.Sprintf("Request body contains badly-formed JSON (at position %d)", syntaxError.Offset)
+			logger.Error(msg)
 			return &malformedRequest{status: http.StatusBadRequest, errorMessage: msg}
 
 		case errors.Is(err, io.ErrUnexpectedEOF):
 			msg := fmt.Sprintf("Request body contains badly-formed JSON")
+			logger.Error(msg)
 			return &malformedRequest{status: http.StatusBadRequest, errorMessage: msg}
 
 		case errors.As(err, &unmarshalTypeError):
 			msg := fmt.Sprintf("Request body contains an invalid value for the %q field (at position %d)", unmarshalTypeError.Field, unmarshalTypeError.Offset)
+			logger.Error(msg)
 			return &malformedRequest{status: http.StatusBadRequest, errorMessage: msg}
 
 		case strings.HasPrefix(err.Error(), "json: unknown field "):
 			fieldName := strings.TrimPrefix(err.Error(), "json: unknown field ")
 			msg := fmt.Sprintf("Request body contains unknown field %s", fieldName)
+			logger.Error(msg)
 			return &malformedRequest{status: http.StatusBadRequest, errorMessage: msg}
 
 		case errors.Is(err, io.EOF):
 			msg := "Request body must not be empty"
+			logger.Error(msg)
 			return &malformedRequest{status: http.StatusBadRequest, errorMessage: msg}
 
 		case err.Error() == "http: request body too large":
 			msg := "Request body must not be larger than 1MB"
+			logger.Error(msg)
 			return &malformedRequest{status: http.StatusRequestEntityTooLarge, errorMessage: msg}
 
 		default:
@@ -102,6 +116,7 @@ func decodeJSONBody(w http.ResponseWriter, request *http.Request, dataStruct int
 	err = dec.Decode(&struct{}{})
 	if err != io.EOF {
 		msg := "Request body must only contain a single JSON object"
+		logger.Error(msg)
 		return &malformedRequest{status: http.StatusBadRequest, errorMessage: msg}
 	}
 

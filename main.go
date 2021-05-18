@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
-	"github.com/nansuri/gp-server/controller"
+
+	_ "github.com/go-sql-driver/mysql"
+	controller "github.com/nansuri/gp-server/controller"
+	logger "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -22,6 +22,6 @@ func main() {
 
 	// Handler
 	http.Handle("/", router)
-	fmt.Println("==== Server Listen on port " + port + " ===")
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	logger.Info("==== Server Listen on port " + port + " ===")
+	logger.Fatal(http.ListenAndServe(":"+port, router))
 }
