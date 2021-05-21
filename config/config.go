@@ -8,7 +8,7 @@ func Connect() *sql.DB {
 	dbDriver := "mysql"
 	dbUser := "gpuser"
 	dbPass := "FtTY@ycvpf-tJ][*"
-	dbConf := "localhost"
+	dbConf := "172.17.0.5"
 	dbName := "osdata"
 
 	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+dbConf+")/"+dbName)
