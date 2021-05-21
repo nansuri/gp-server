@@ -9,7 +9,7 @@ func Connect() *sql.DB {
 	dbUser := "gpuser"
 	dbPass := "FtTY@ycvpf-tJ][*"
 	dbConf := "147.139.135.50"
-	dbName := "multi_data"
+	dbName := "osdata"
 
 	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+dbConf+")/"+dbName)
 	if err != nil {

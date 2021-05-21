@@ -37,3 +37,16 @@ type AvatarUrls struct {
 	C string `json:"16x16"`
 	D string `json:"32x32"`
 }
+
+type JiraFieldResult struct {
+	FieldName  string      `json:"field_name"`
+	FieldItems []FieldItem `json:"field_items"`
+	Status     bool        `json:"success"`
+	Error      string      `json:"error_detail"`
+}
+
+type FieldItem struct {
+	ID          int    `json:"id"`
+	Value       string `json:"value"`
+	Description string `json:"description"`
+}

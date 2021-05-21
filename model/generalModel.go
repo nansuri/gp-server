@@ -5,6 +5,7 @@ type GeneralRequest struct {
 }
 
 type GeneralResponse struct {
-	DataOutput string `json:"data_outpot"`
+	DataOutput string `json:"data_output"`
+	Status     string `json:"success"`
 	Error      string `json:"error_detail"`
 }

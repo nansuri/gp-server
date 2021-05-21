@@ -23,6 +23,10 @@ func (mr *malformedRequest) Error() string {
 	return mr.errorMessage
 }
 
+func getQueryParam(w http.ResponseWriter, request *http.Request, queryParamKey string) string {
+	return request.URL.Query().Get(queryParamKey)
+}
+
 // Request decoder and validation
 func decodeRequest(w http.ResponseWriter, request *http.Request, dataStruct interface{}) {
 	err := decodeJSONBody(w, request, dataStruct)

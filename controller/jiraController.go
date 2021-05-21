@@ -8,6 +8,7 @@ import (
 	config "github.com/nansuri/gp-server/config"
 	model "github.com/nansuri/gp-server/model"
 	service "github.com/nansuri/gp-server/service"
+	dbservice "github.com/nansuri/gp-server/service/database"
 	logger "github.com/sirupsen/logrus"
 )
 
@@ -15,6 +16,7 @@ import (
 func JiraBridgeAPI(router *mux.Router, prefix string) {
 	router.HandleFunc("/"+prefix+"/create", CreateJiraIssue).Methods("POST")
 	router.HandleFunc("/"+prefix+"/account", GetAccountIdByEmailAPI).Methods("GET")
+	router.HandleFunc("/"+prefix+"/fields", GetFieldInfo).Methods("GET")
 }
 
 // Test json request body
@@ -74,6 +76,30 @@ func GetAccountIdByEmailAPI(w http.ResponseWriter, r *http.Request) {
 
 	// Logic
 	response.DataOutput = service.GetAccountIdByEmail(request.DataInput)
+
+	// Send response
+	EncodeResponse(w, r, response)
+}
+
+func GetFieldInfo(w http.ResponseWriter, r *http.Request) {
+
+	// Define your request and response data struct here
+	var response model.JiraFieldResult
+
+	// Query param decoder
+	field := getQueryParam(w, r, "name")
+
+	// Logic
+	if field == "JIRA_BOARD" || field == "TICKET_TYPE" || field == "TICKET_PRIORITY" {
+		response.FieldName = field
+		response.FieldItems = dbservice.DbQueryTicketInfo(field)
+
+		if response.FieldItems != nil {
+			response.Status = true
+		}
+	} else {
+		response.Error = "Invalid field name"
+	}
 
 	// Send response
 	EncodeResponse(w, r, response)
